@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script type="text/javascript"  src="http://cdn.socket.io/stable/socket.io.js"></script>
+<script>
+
+// To send data, open http://site/my/test/channel/push?data=putyourdatahere
+CHANNEL='my/test/channel'
+
+WEB_SOCKET_SWF_LOCATION = 'http://cdn.socket.io/stable/WebSocketMain.swf'
+$(document).ready(function () {
+    ws = new io.Socket('localhost', {
+          port: '8888',
+          resource: CHANNEL,
+          transports:['websocket', 'flashsocket','xhr-multipart',
+                      'xhr-polling']
+    })
+    
+    ws.on('message', function(message) {
+        $('body').append('<div>' + message + '</div>');
+    });
+
+    ws.connect();
+    
+    $('body').append('<div> Start! </div>');
+});
+
+</script>
+</head>
+<body>
+<script>
+
+</script>
+
+</body>
+</html>
