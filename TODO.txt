@@ -1,0 +1,6 @@
+Stuff to be added before 0.1 release
+=====================================
+
+ * Allowed hosts - only allow push from particular hosts
+ * Daemon mode - backgrounding the process
+ * Configuration file - load config from configuration file

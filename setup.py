@@ -19,12 +19,14 @@ setup(name='radiate',
       zip_safe=False,
       install_requires=[
           'tornado',
-          'TornadIO'
+          'TornadIO',
+          'argh',
+          'argparse'
           # -*- Extra requirements: -*-
       ],
       entry_points={
           'console_scripts': [
-              'radiate-server = radiate:main',
+              'radiate-admin = radiate.admin:main',
            ]
       },
 )
