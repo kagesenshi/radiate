@@ -35,6 +35,9 @@ class Announcer(tornado.web.RequestHandler):
             socket.send(data)
         self.write('Posted to %s subscribers' % len(CHANNELS[channel]))
 
+    def post(self, channel):
+        self.get(channel)
+
 class Stats(tornado.web.RequestHandler):
     def get(self, channel):
         channel = normalize_channel(channel)
