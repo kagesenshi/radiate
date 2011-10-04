@@ -1,0 +1,79 @@
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script type="text/javascript"  src="http://cdn.socket.io/stable/socket.io.js"></script>
+<script>
+jQuery.extend({
+    stringify : function stringify(obj) {
+        var t = typeof (obj);
+        if (t != "object" || obj === null) {
+            // simple data type
+            if (t == "string") obj = '"' + obj + '"';
+            return String(obj);
+        } else {
+            // recurse array or object
+            var n, v, json = [], arr = (obj && obj.constructor == Array);
+
+            for (n in obj) {
+                v = obj[n];
+                t = typeof(v);
+                if (obj.hasOwnProperty(n)) {
+                    if (t == "string") v = '"' + v + '"'; else if (t == "object" && v !== null) v = jQuery.stringify(v);
+                    json.push((arr ? "" : '"' + n + '":') + String(v));
+                }
+            }
+            return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
+        }
+    }
+});
+</script>
+<script>
+WEB_SOCKET_SWF_LOCATION = 'http://cdn.socket.io/stable/WebSocketMain.swf'
+$(document).ready(function() {
+   var HOST = 'localhost';
+   var PORT = '8888';
+   var CHANNEL = 'chatroom';
+   ws = new io.Socket(HOST, {
+          port: PORT,
+          resource: CHANNEL,
+          transports:['websocket', 'flashsocket','xhr-multipart',
+                      'xhr-polling']
+   });
+   ws.on('message', function (data) {
+      var msg = $.parseJSON(data)
+      $('#chatbox').append('<div>&lt;'+ msg.user + '&gt; ' + msg.text + '</div>');
+      $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight);
+   });
+   ws.connect();
+
+   var send_data = function() {
+      var data = {};
+      data.user = $('[name=user]').val();
+      data.text = $('[name=text]').val();
+      $.ajax({type: 'POST',
+              url: 'http://' + HOST + ':' + PORT + '/' + CHANNEL + '/push',
+              data: {data: $.stringify(data)}
+      });
+      $('[name=text]').val('');
+   }
+   $('#sendbutton').click(function () {
+       send_data();
+   });
+   $('[name=text]').bind('keypress', function (event) {
+       if (event.keyCode == 13) {
+          send_data();
+       }
+   });
+});
+</script>
+</head>
+<body>
+   <div id="chatbox" style="border:1px solid #000;height:200px;overflow:auto">
+   </div>
+   <div>
+      Nick : <input name="user" size="10"/>  Message : 
+            <input name="text" size="50"/>
+      <button id="sendbutton">Send</button>
+   </div>
+</body>
+</html>
